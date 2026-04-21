@@ -188,6 +188,10 @@ func (d *localDriver) applyPod(
 						MountPath: "/var/lib/containerd",
 					},
 					{
+						Name:      "docker-socket",
+						MountPath: "/host-docker.sock",
+					},
+					{
 						Name:      "modules",
 						MountPath: "/lib/modules",
 						ReadOnly:  true,
@@ -226,6 +230,15 @@ func (d *localDriver) applyPod(
 				Name: "containerd",
 				VolumeSource: corev1.VolumeSource{
 					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
+			{
+				Name: "docker-socket",
+				VolumeSource: corev1.VolumeSource{
+					HostPath: &corev1.HostPathVolumeSource{
+						Path: "/var/run/docker.sock",
+						Type: ptr.To(corev1.HostPathSocket),
+					},
 				},
 			},
 			{

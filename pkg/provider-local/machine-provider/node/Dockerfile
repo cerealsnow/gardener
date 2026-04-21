@@ -19,10 +19,10 @@ COPY containerd /etc/containerd/certs.d/
 # names with colon are not allowed in the directory name checked into Git as it breaks go mod if gardener/gardener is used as a module
 RUN mv /etc/containerd/certs.d/registry.local.gardener.cloud_5001 /etc/containerd/certs.d/registry.local.gardener.cloud:5001
 
-# add our userdata executor unit
+# add our custom systemd units
 COPY run-userdata.sh /run-userdata.sh
-COPY run-userdata.service /etc/systemd/system
-RUN systemctl enable run-userdata.service
+COPY run-userdata.service docker-socket.service /etc/systemd/system/
+RUN systemctl enable run-userdata.service docker-socket.service
 
 RUN runc --version ; containerd --version
 
