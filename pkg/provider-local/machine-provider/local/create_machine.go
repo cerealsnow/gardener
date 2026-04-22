@@ -187,9 +187,16 @@ func (d *localDriver) applyPod(
 						Name:      "containerd",
 						MountPath: "/var/lib/containerd",
 					},
+					// Mount /run as tmpfs so systemd does not override it.
+					// Otherwise, systemd mounts its own tmpfs on /run and hides
+					// the mounted Docker socket.
+					{
+						Name:      "run",
+						MountPath: "/run",
+					},
 					{
 						Name:      "docker-socket",
-						MountPath: "/host-docker.sock",
+						MountPath: "/var/run/docker.sock",
 					},
 					{
 						Name:      "modules",
@@ -230,6 +237,14 @@ func (d *localDriver) applyPod(
 				Name: "containerd",
 				VolumeSource: corev1.VolumeSource{
 					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
+			{
+				Name: "run",
+				VolumeSource: corev1.VolumeSource{
+					EmptyDir: &corev1.EmptyDirVolumeSource{
+						Medium: corev1.StorageMediumMemory,
+					},
 				},
 			},
 			{
